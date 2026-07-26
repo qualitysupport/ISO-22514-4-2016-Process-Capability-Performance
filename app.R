@@ -239,38 +239,38 @@ make_example_data <- function() {
 # UI
 # ---------------------------------------------------------------------------
 theme <- bs_theme(version = 5, bootswatch = "flatly",
-                   primary = "#2c3e50", success = "#18823c",
-                   warning = "#e08e0b", danger = "#c0392b")
+                  primary = "#2c3e50", success = "#18823c",
+                  warning = "#e08e0b", danger = "#c0392b")
 
 data_sidebar <- sidebar(
   title = "Data & specification",
   width = 340,
   open = "open",
-
+  
   radioButtons("data_mode", "Data source",
                choices = c("Use example data" = "example",
                            "Upload a file" = "upload",
                            "Paste values" = "manual"),
                selected = "example"),
-
+  
   conditionalPanel(
     "input.data_mode == 'upload'",
     fileInput("file", "CSV or Excel file", accept = c(".csv", ".xlsx", ".xls")),
     uiOutput("col_select_ui")
   ),
-
+  
   conditionalPanel(
     "input.data_mode == 'manual'",
     textAreaInput("manual_vals", "Paste measurements",
-                   rows = 6, placeholder = "One value per line, or separated by commas/spaces")
+                  rows = 6, placeholder = "One value per line, or separated by commas/spaces")
   ),
-
+  
   hr(),
   strong("Short-term (inherent) variation"),
   helpText("Used for the capability indices Cp/Cpk. Choose how the data are grouped into subgroups (ISO 22514-4, Annex A)."),
   numericInput("subgroup_n", "Subgroup size (1 = individuals / moving range)",
                value = 1, min = 1, max = 10, step = 1),
-
+  
   hr(),
   strong("Specification limits"),
   checkboxInput("has_L", "Lower limit (L)", value = TRUE),
@@ -279,7 +279,7 @@ data_sidebar <- sidebar(
   conditionalPanel("input.has_U", numericInput("U_val", NULL, value = 11)),
   checkboxInput("has_T", "Target (T) — for Cpm / Qk", value = TRUE),
   conditionalPanel("input.has_T", numericInput("T_val", NULL, value = 10)),
-
+  
   hr(),
   sliderInput("conf_level", "Confidence level for intervals",
               min = 0.80, max = 0.99, value = 0.95, step = 0.01)
@@ -290,222 +290,222 @@ ui <- page_navbar(
   theme = theme,
   sidebar = data_sidebar,
   fillable = TRUE,
-
+  
   nav_panel("Overview", icon = icon("book-open"),
-    layout_column_wrap(
-      width = 1,
-      card(
-        card_header("What this app does"),
-        card_body(
-          p("ISO 22514-4:2016 sets out the common measures used to describe how well a process's output stays inside its specification limits.
+            layout_column_wrap(
+              width = 1,
+              card(
+                card_header("What this app does"),
+                card_body(
+                  p("ISO 22514-4:2016 sets out the common measures used to describe how well a process's output stays inside its specification limits.
              This app lets you calculate those measures on your own data, and includes an interactive section that builds
              intuition for the underlying concepts."),
-          p(strong("Two families of measures, one key distinction:")),
-          layout_column_wrap(
-            width = 1/2,
-            card(class = "border-primary",
-              card_header(strong("Capability (Cp, Cpk)")),
-              card_body(
-                p("Describes what a process is capable of when it is running in a demonstrated state of statistical control —
+                  p(strong("Two families of measures, one key distinction:")),
+                  layout_column_wrap(
+                    width = 1/2,
+                    card(class = "border-primary",
+                         card_header(strong("Capability (Cp, Cpk)")),
+                         card_body(
+                           p("Describes what a process is capable of when it is running in a demonstrated state of statistical control —
                    i.e. only common-cause (random) variation remains, assignable causes have been removed, and a control
                    chart confirms stability."),
-                p("Uses the ", strong("short-term / inherent"), " standard deviation, typically estimated from
+                           p("Uses the ", strong("short-term / inherent"), " standard deviation, typically estimated from
                    subgroup ranges on a control chart.")
-              )
-            ),
-            card(class = "border-secondary",
-              card_header(strong("Performance (Pp, Ppk)")),
-              card_body(
-                p("Describes what a process actually delivered over an observation period, with no requirement that the
+                         )
+                    ),
+                    card(class = "border-secondary",
+                         card_header(strong("Performance (Pp, Ppk)")),
+                         card_body(
+                           p("Describes what a process actually delivered over an observation period, with no requirement that the
                    process be shown to be in statistical control. It reflects everything that happened — including any
                    drift, shifts, or instability."),
-                p("Uses the ", strong("total / long-term"), " standard deviation, calculated directly from all the data.")
+                           p("Uses the ", strong("total / long-term"), " standard deviation, calculated directly from all the data.")
+                         )
+                    )
+                  ),
+                  p("Because performance includes extra sources of variation that capability assumes have been eliminated,
+             Pp/Ppk will typically be lower than Cp/Cpk for the same process."),
+                  tags$hr(),
+                  p(strong("How to use this app:")),
+                  tags$ol(
+                    tags$li("Load your data (or start with the built-in example) and set your specification limits in the sidebar."),
+                    tags$li("Visit ", strong("Concepts"), " to build intuition for dispersion, reference limits, and the capability/performance distinction."),
+                    tags$li("Visit ", strong("Capability & Performance"), " for the main Cp/Cpk/Pp/Ppk calculation, plots, and confidence intervals."),
+                    tags$li("If your data look skewed, visit ", strong("Non-Normal Data"), " for probability-paper and distribution-fitting estimates."),
+                    tags$li("Visit ", strong("Other Indices"), " for PCF, MSE, Qk and Cpm, and ", strong("Report"), " for a shareable summary.")
+                  )
+                )
               )
             )
-          ),
-          p("Because performance includes extra sources of variation that capability assumes have been eliminated,
-             Pp/Ppk will typically be lower than Cp/Cpk for the same process."),
-          tags$hr(),
-          p(strong("How to use this app:")),
-          tags$ol(
-            tags$li("Load your data (or start with the built-in example) and set your specification limits in the sidebar."),
-            tags$li("Visit ", strong("Concepts"), " to build intuition for dispersion, reference limits, and the capability/performance distinction."),
-            tags$li("Visit ", strong("Capability & Performance"), " for the main Cp/Cpk/Pp/Ppk calculation, plots, and confidence intervals."),
-            tags$li("If your data look skewed, visit ", strong("Non-Normal Data"), " for probability-paper and distribution-fitting estimates."),
-            tags$li("Visit ", strong("Other Indices"), " for PCF, MSE, Qk and Cpm, and ", strong("Report"), " for a shareable summary.")
-          )
-        )
-      )
-    )
   ),
-
+  
   nav_panel("Concepts", icon = icon("lightbulb"),
-    navset_card_tab(
-      nav_panel("Dispersion & reference limits",
-        layout_sidebar(
-          sidebar = sidebar(
-            position = "right", width = 280,
-            sliderInput("c_mu", "Process mean (μ)", min = -5, max = 5, value = 0, step = 0.1),
-            sliderInput("c_sigma", "Process standard deviation (σ)", min = 0.2, max = 3, value = 1, step = 0.1),
-            checkboxInput("c_show_limits", "Show reference limits (0.135% / 99.865%)", TRUE),
-            checkboxInput("c_show_spec", "Overlay specification limits", FALSE),
-            conditionalPanel("input.c_show_spec",
-              sliderInput("c_L", "Lower spec limit", min = -8, max = 8, value = -3, step = 0.1),
-              sliderInput("c_U", "Upper spec limit", min = -8, max = 8, value = 3, step = 0.1)
-            )
-          ),
-          p("A process that is in statistical control has a predictable spread. The ", strong("reference interval"),
-            " is the span that captures 99.73% of individual values, leaving 0.135% in each tail. For a normal
+            navset_card_tab(
+              nav_panel("Dispersion & reference limits",
+                        layout_sidebar(
+                          sidebar = sidebar(
+                            position = "right", width = 280,
+                            sliderInput("c_mu", "Process mean (μ)", min = -5, max = 5, value = 0, step = 0.1),
+                            sliderInput("c_sigma", "Process standard deviation (σ)", min = 0.2, max = 3, value = 1, step = 0.1),
+                            checkboxInput("c_show_limits", "Show reference limits (0.135% / 99.865%)", TRUE),
+                            checkboxInput("c_show_spec", "Overlay specification limits", FALSE),
+                            conditionalPanel("input.c_show_spec",
+                                             sliderInput("c_L", "Lower spec limit", min = -8, max = 8, value = -3, step = 0.1),
+                                             sliderInput("c_U", "Upper spec limit", min = -8, max = 8, value = 3, step = 0.1)
+                            )
+                          ),
+                          p("A process that is in statistical control has a predictable spread. The ", strong("reference interval"),
+                            " is the span that captures 99.73% of individual values, leaving 0.135% in each tail. For a normal
             distribution this interval is exactly six standard deviations wide. Move the sliders to see how the
             reference limits shift with the process mean and spread, and (optionally) how that spread compares
             with a specification window."),
-          plotOutput("concept_plot1", height = 380)
-        )
-      ),
-      nav_panel("Short-term vs. total dispersion",
-        p("A process can look tighter over a short window than it does over the long run. Each little cluster below
+                          plotOutput("concept_plot1", height = 380)
+                        )
+              ),
+              nav_panel("Short-term vs. total dispersion",
+                        p("A process can look tighter over a short window than it does over the long run. Each little cluster below
            represents a short-term subgroup (its spread reflects only the ", em("inherent"), " variation). If the
            subgroup means drift over time — a common-cause of longer-term instability — the ", strong("total"),
-          " dispersion of all the individual values pooled together is wider than any single subgroup's spread.
+                          " dispersion of all the individual values pooled together is wider than any single subgroup's spread.
            This is exactly why ISO 22514-4 keeps capability (short-term σ) and performance (total σ) as separate,
            clearly labelled measures rather than one number."),
-        sliderInput("c_drift", "Amount of mean drift between subgroups", min = 0, max = 3, value = 1.2, step = 0.1, width = "50%"),
-        plotOutput("concept_plot2", height = 420)
-      ),
-      nav_panel("Capability vs. performance conditions",
-        layout_column_wrap(
-          width = 1/2,
-          card(card_header(strong("Conditions expected for a capability study")),
-            card_body(tags$ul(
-              tags$li("The process is monitored with a control chart and shown to be in statistical control."),
-              tags$li("Technical/environmental conditions are documented and held consistent."),
-              tags$li("Measurement system uncertainty has been assessed and judged adequate."),
-              tags$li("The standard deviation used reflects only short-term, inherent (common-cause) variation.")
-            ))
-          ),
-          card(card_header(strong("Conditions expected for a performance study")),
-            card_body(tags$ul(
-              tags$li("No requirement for statistical control — historical or as-collected data can be used."),
-              tags$li("Technical/environmental conditions are still documented for context."),
-              tags$li("Measurement system uncertainty should still be assessed."),
-              tags$li("The standard deviation used reflects total, long-term variation, including any instability.")
-            ))
-          )
-        )
-      )
-    )
+                        sliderInput("c_drift", "Amount of mean drift between subgroups", min = 0, max = 3, value = 1.2, step = 0.1, width = "50%"),
+                        plotOutput("concept_plot2", height = 420)
+              ),
+              nav_panel("Capability vs. performance conditions",
+                        layout_column_wrap(
+                          width = 1/2,
+                          card(card_header(strong("Conditions expected for a capability study")),
+                               card_body(tags$ul(
+                                 tags$li("The process is monitored with a control chart and shown to be in statistical control."),
+                                 tags$li("Technical/environmental conditions are documented and held consistent."),
+                                 tags$li("Measurement system uncertainty has been assessed and judged adequate."),
+                                 tags$li("The standard deviation used reflects only short-term, inherent (common-cause) variation.")
+                               ))
+                          ),
+                          card(card_header(strong("Conditions expected for a performance study")),
+                               card_body(tags$ul(
+                                 tags$li("No requirement for statistical control — historical or as-collected data can be used."),
+                                 tags$li("Technical/environmental conditions are still documented for context."),
+                                 tags$li("Measurement system uncertainty should still be assessed."),
+                                 tags$li("The standard deviation used reflects total, long-term variation, including any instability.")
+                               ))
+                          )
+                        )
+              )
+            )
   ),
-
+  
   nav_panel("Capability & Performance", icon = icon("chart-column"),
-    layout_column_wrap(
-      width = 1,
-      uiOutput("main_valueboxes"),
-      layout_column_wrap(
-        width = 1/2,
-        card(card_header("Distribution vs. specification limits"),
-             card_body(plotOutput("hist_plot", height = 380))),
-        card(card_header("Normal probability (Q-Q) plot"),
-             card_body(plotOutput("qq_plot", height = 380),
-                       p(class = "text-muted small", "Points following the diagonal line support the normal-distribution
+            layout_column_wrap(
+              width = 1,
+              uiOutput("main_valueboxes"),
+              layout_column_wrap(
+                width = 1/2,
+                card(card_header("Distribution vs. specification limits"),
+                     card_body(plotOutput("hist_plot", height = 380))),
+                card(card_header("Normal probability (Q-Q) plot"),
+                     card_body(plotOutput("qq_plot", height = 380),
+                               p(class = "text-muted small", "Points following the diagonal line support the normal-distribution
                           assumption behind Cp/Cpk and Pp/Ppk. If they curve away, see the Non-Normal Data tab.")))
-      ),
-      card(card_header("Detailed results"),
-        card_body(
-          DTOutput("results_table"),
-          tags$hr(),
-          uiOutput("sigma_method_note")
-        )
-      ),
-      card(card_header("Confidence intervals (Annex D.1.2, normal-approximation method)"),
-        card_body(
-          p(class = "text-muted", "Calculated indices are point estimates of a true, unknown value; ISO 22514-4 recommends
+              ),
+              card(card_header("Detailed results"),
+                   card_body(
+                     DTOutput("results_table"),
+                     tags$hr(),
+                     uiOutput("sigma_method_note")
+                   )
+              ),
+              card(card_header("Confidence intervals (Annex D.1.2, normal-approximation method)"),
+                   card_body(
+                     p(class = "text-muted", "Calculated indices are point estimates of a true, unknown value; ISO 22514-4 recommends
              reporting a confidence interval alongside them. This formula method is intended for samples of 50 or more."),
-          DTOutput("ci_table")
-        )
-      )
-    )
+                     DTOutput("ci_table")
+                   )
+              )
+            )
   ),
-
+  
   nav_panel("Non-Normal Data", icon = icon("chart-area"),
-    layout_column_wrap(
-      width = 1,
-      card(card_header("Is the normal distribution a reasonable fit?"),
-        card_body(
-          layout_column_wrap(width = 1/3,
-            value_box(title = "Skewness (γ1)", value = textOutput("skew_val"), theme = "secondary"),
-            value_box(title = "Kurtosis (β2)", value = textOutput("kurt_val"), theme = "secondary"),
-            value_box(title = "Shapiro-Wilk p-value", value = textOutput("shapiro_val"), theme = "secondary")
-          ),
-          p(class = "text-muted small",
-            "A normal distribution has skewness 0 and kurtosis 3. A Shapiro-Wilk p-value below 0.05 is common practice
+            layout_column_wrap(
+              width = 1,
+              card(card_header("Is the normal distribution a reasonable fit?"),
+                   card_body(
+                     layout_column_wrap(width = 1/3,
+                                        value_box(title = "Skewness (γ1)", value = textOutput("skew_val"), theme = "secondary"),
+                                        value_box(title = "Kurtosis (β2)", value = textOutput("kurt_val"), theme = "secondary"),
+                                        value_box(title = "Shapiro-Wilk p-value", value = textOutput("shapiro_val"), theme = "secondary")
+                     ),
+                     p(class = "text-muted small",
+                       "A normal distribution has skewness 0 and kurtosis 3. A Shapiro-Wilk p-value below 0.05 is common practice
              evidence against normality (n must be between 3 and 5000 for this test).")
-        )
-      ),
-      card(card_header("Probability-paper method (Clause 4.5.2 / 5.3.2)"),
-        card_body(
-          p("Instead of assuming normality, this method reads the 0.135 and 99.865 percentiles directly from the
+                   )
+              ),
+              card(card_header("Probability-paper method (Clause 4.5.2 / 5.3.2)"),
+                   card_body(
+                     p("Instead of assuming normality, this method reads the 0.135 and 99.865 percentiles directly from the
              empirical distribution and substitutes them for the ±3σ points used in the normal formulas."),
-          DTOutput("nonnormal_table"),
-          p(class = "text-muted small", "Extreme percentiles estimated from small samples can be unstable —
+                     DTOutput("nonnormal_table"),
+                     p(class = "text-muted small", "Extreme percentiles estimated from small samples can be unstable —
              treat this as indicative rather than precise for n well under 100.")
-        )
-      ),
-      card(card_header("Distribution-identification method (Annex C)"),
-        card_body(
-          p("As an alternative, a specific distribution family can be fitted to the data and its theoretical
+                   )
+              ),
+              card(card_header("Distribution-identification method (Annex C)"),
+                   card_body(
+                     p("As an alternative, a specific distribution family can be fitted to the data and its theoretical
              percentiles used instead. This app fits the two families most common in capability work:
              the log-normal (Annex C.3) and Weibull (Annex C.5) distributions. Both require strictly positive data."),
-          DTOutput("fit_table")
-        )
-      )
-    )
+                     DTOutput("fit_table")
+                   )
+              )
+            )
   ),
-
+  
   nav_panel("Other Indices", icon = icon("calculator"),
-    layout_column_wrap(
-      width = 1,
-      card(card_header("Target-based measures (Clause 4.7)"),
-        card_body(
-          p("These measures incorporate a target value, T, penalising both off-centre location and excess spread
+            layout_column_wrap(
+              width = 1,
+              card(card_header("Target-based measures (Clause 4.7)"),
+                   card_body(
+                     p("These measures incorporate a target value, T, penalising both off-centre location and excess spread
              in a single number — useful when the goal is to sit close to a nominal value, not merely inside the limits."),
-          DTOutput("other_indices_table")
-        )
-      ),
-      card(card_header("Process Capability Fraction (PCF)"),
-        card_body(
-          p("The PCF is simply the inverse of Cp expressed as a percentage: the proportion of the specification
+                     DTOutput("other_indices_table")
+                   )
+              ),
+              card(card_header("Process Capability Fraction (PCF)"),
+                   card_body(
+                     p("The PCF is simply the inverse of Cp expressed as a percentage: the proportion of the specification
              width that the process's natural spread consumes."),
-          textOutput("pcf_text")
-        )
-      )
-    )
+                     textOutput("pcf_text")
+                   )
+              )
+            )
   ),
-
+  
   nav_panel("Report", icon = icon("file-lines"),
-    layout_column_wrap(
-      width = 1,
-      card(card_header("Summary report"),
-        card_body(
-          DTOutput("report_table"),
-          tags$br(),
-          downloadButton("download_report", "Download report (CSV)")
-        )
-      ),
-      card(card_header("Raw data used"),
-        card_body(DTOutput("raw_data_table")))
-    )
+            layout_column_wrap(
+              width = 1,
+              card(card_header("Summary report"),
+                   card_body(
+                     DTOutput("report_table"),
+                     tags$br(),
+                     downloadButton("download_report", "Download report (CSV)")
+                   )
+              ),
+              card(card_header("Raw data used"),
+                   card_body(DTOutput("raw_data_table")))
+            )
   ),
-
+  
   nav_spacer(),
   nav_item(tags$a(href = "https://www.iso.org/standard/72463.html", target = "_blank",
-                   "ISO 22514-4:2016 on iso.org", class = "small text-muted"))
+                  "ISO 22514-4:2016 on iso.org", class = "small text-muted"))
 )
 
 # ---------------------------------------------------------------------------
 # Server
 # ---------------------------------------------------------------------------
 server <- function(input, output, session) {
-
+  
   ## ---- Data ingestion ----
   dataset_raw <- reactive({
     if (input$data_mode == "example") {
@@ -514,20 +514,26 @@ server <- function(input, output, session) {
       req(input$file)
       ext <- tolower(tools::file_ext(input$file$name))
       df <- switch(ext,
-        csv = read.csv(input$file$datapath, stringsAsFactors = FALSE),
-        xlsx = as.data.frame(readxl::read_excel(input$file$datapath)),
-        xls  = as.data.frame(readxl::read_excel(input$file$datapath)),
-        validate("Unsupported file type — please upload a .csv, .xlsx or .xls file.")
+                   csv = read.csv(input$file$datapath, stringsAsFactors = FALSE),
+                   xlsx = as.data.frame(readxl::read_excel(input$file$datapath)),
+                   xls  = as.data.frame(readxl::read_excel(input$file$datapath)),
+                   validate("Unsupported file type — please upload a .csv, .xlsx or .xls file.")
       )
       df
     } else {
       req(input$manual_vals)
-      vals <- suppressWarnings(as.numeric(unlist(strsplit(input$manual_vals, "[,\\s]+"))))
+      # Extract all number-like substrings rather than splitting on
+      # delimiters. This is deliberately permissive: it correctly handles
+      # values separated by newlines, commas, tabs, or spaces (in any mix),
+      # and silently ignores non-numeric text such as a pasted CSV header
+      # (e.g. "value") or stray quote marks.
+      m <- gregexpr("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?", input$manual_vals, perl = TRUE)
+      vals <- suppressWarnings(as.numeric(unlist(regmatches(input$manual_vals, m))))
       vals <- vals[!is.na(vals)]
       data.frame(value = vals)
     }
   })
-
+  
   output$col_select_ui <- renderUI({
     req(input$data_mode == "upload")
     df <- tryCatch(dataset_raw(), error = function(e) NULL)
@@ -536,7 +542,7 @@ server <- function(input, output, session) {
     validate(need(length(numeric_cols) > 0, "No numeric columns found in this file."))
     selectInput("meas_col", "Measurement column", choices = numeric_cols)
   })
-
+  
   x_vals <- reactive({
     df <- dataset_raw()
     if (input$data_mode == "upload") {
@@ -549,7 +555,7 @@ server <- function(input, output, session) {
     validate(need(length(v) >= 5, "Please provide at least 5 numeric values."))
     v
   })
-
+  
   ## ---- Specification limits ----
   spec <- reactive({
     L <- if (isTRUE(input$has_L)) input$L_val else NA_real_
@@ -559,7 +565,7 @@ server <- function(input, output, session) {
     if (!is.na(L) && !is.na(U)) validate(need(U > L, "The upper limit must be greater than the lower limit."))
     list(L = L, U = U, T = Tg)
   })
-
+  
   ## ---- Short-term sigma ----
   sigma_short_info <- reactive({
     x <- x_vals()
@@ -575,12 +581,12 @@ server <- function(input, output, session) {
       } else {
         list(sigma = info$sigma,
              method = sprintf("Subgroup range method: %d complete subgroups of size %d, R-bar = %.4f, d2 = %.3f",
-                               info$k, n, info$Rbar, unname(d2_table[as.character(n)])))
+                              info$k, n, info$Rbar, unname(d2_table[as.character(n)])))
       }
     }
   })
   `%||%` <- function(a, b) if (is.null(a)) b else a
-
+  
   ## ---- Core results ----
   results <- reactive({
     x <- x_vals(); sp <- spec()
@@ -588,23 +594,23 @@ server <- function(input, output, session) {
     sigma_t <- sd(x)
     ss <- sigma_short_info()
     sigma_s <- ss$sigma
-
+    
     cap  <- if (!is.na(sigma_s)) capability_block(sigma_s, mu, sp$L, sp$U) else list(Cp=NA,CPU=NA,CPL=NA,Cpk=NA)
     perf <- capability_block(sigma_t, mu, sp$L, sp$U)
-
+    
     list(N = length(x), mu = mu, med = med, sigma_t = sigma_t, sigma_s = sigma_s,
          ss_method = ss$method, cap = cap, perf = perf, spec = sp)
   })
-
+  
   ## ---- Value boxes ----
   output$main_valueboxes <- renderUI({
     r <- results()
     mk <- function(label, val, sub) {
       interp <- interpret_index(val)
       value_box(title = label,
-                 value = if (is.na(val)) "N/A" else sprintf("%.2f", val),
-                 showcase = tags$span(class = paste0("badge bg-", interp$class), interp$label),
-                 theme = interp$class, p(class = "small", sub))
+                value = if (is.na(val)) "N/A" else sprintf("%.2f", val),
+                showcase = tags$span(class = paste0("badge bg-", interp$class), interp$label),
+                theme = interp$class, p(class = "small", sub))
     }
     layout_column_wrap(
       width = 1/4,
@@ -614,14 +620,14 @@ server <- function(input, output, session) {
       mk("Ppk (performance)", r$perf$Cpk, "Spread + centring, total σ")
     )
   })
-
+  
   ## ---- Plots ----
   output$hist_plot <- renderPlot({
     x <- x_vals(); sp <- spec(); r <- results()
     df <- data.frame(x = x)
     g <- ggplot(df, aes(x = x)) +
       geom_histogram(aes(y = after_stat(density)), bins = min(30, max(10, round(length(x)/5))),
-                      fill = "#2c3e50", alpha = 0.75, color = "white") +
+                     fill = "#2c3e50", alpha = 0.75, color = "white") +
       stat_function(fun = dnorm, args = list(mean = r$mu, sd = r$sigma_t),
                     color = "#c0392b", linewidth = 1) +
       labs(x = "Measured value", y = "Density") +
@@ -631,7 +637,7 @@ server <- function(input, output, session) {
     if (!is.na(sp$T)) g <- g + geom_vline(xintercept = sp$T, color = "#18823c", linewidth = 1, linetype = "dotted")
     g
   })
-
+  
   output$qq_plot <- renderPlot({
     x <- x_vals()
     df <- data.frame(x = x)
@@ -641,7 +647,7 @@ server <- function(input, output, session) {
       labs(x = "Theoretical normal quantiles", y = "Sample quantiles") +
       theme_minimal(base_size = 13)
   })
-
+  
   ## ---- Results table ----
   output$results_table <- renderDT({
     r <- results()
@@ -656,12 +662,12 @@ server <- function(input, output, session) {
     df$Value <- round(df$Value, 4)
     datatable(df, options = list(dom = "t", pageLength = 20), rownames = FALSE)
   })
-
+  
   output$sigma_method_note <- renderUI({
     r <- results()
     p(class = "text-muted small", strong("Short-term σ estimation: "), r$ss_method)
   })
-
+  
   ## ---- Confidence intervals ----
   output$ci_table <- renderDT({
     r <- results(); conf <- input$conf_level
@@ -676,7 +682,7 @@ server <- function(input, output, session) {
     df[ , 2:4] <- lapply(df[ , 2:4], function(col) round(as.numeric(col), 3))
     datatable(df, options = list(dom = "t", pageLength = 10), rownames = FALSE)
   })
-
+  
   ## ---- Non-normal analysis ----
   output$skew_val <- renderText(sprintf("%.3f", sample_skewness(x_vals())))
   output$kurt_val <- renderText(sprintf("%.3f", sample_kurtosis(x_vals())))
@@ -686,7 +692,7 @@ server <- function(input, output, session) {
       sprintf("%.4f", shapiro.test(x)$p.value)
     } else "n out of range"
   })
-
+  
   output$nonnormal_table <- renderDT({
     x <- x_vals(); sp <- spec()
     nb <- nonnormal_block(x, sp$L, sp$U)
@@ -697,14 +703,14 @@ server <- function(input, output, session) {
     )
     datatable(df, options = list(dom = "t", pageLength = 10), rownames = FALSE)
   })
-
+  
   output$fit_table <- renderDT({
     x <- x_vals(); sp <- spec()
     ln <- suppressWarnings(lognormal_indices(fit_lognormal(x), sp$L, sp$U))
     wb <- suppressWarnings(weibull_indices(fit_weibull(x), sp$L, sp$U))
     if (is.null(ln) && is.null(wb)) {
       return(datatable(data.frame(Note = "Data must be strictly positive to fit log-normal or Weibull distributions."),
-                        options = list(dom = "t"), rownames = FALSE))
+                       options = list(dom = "t"), rownames = FALSE))
     }
     rows <- list()
     if (!is.null(ln)) rows$Lognormal <- c("Log-normal", round(ln$Pp, 4), round(ln$pL, 5), round(ln$pU, 5))
@@ -714,13 +720,13 @@ server <- function(input, output, session) {
     df[ , 2:4] <- lapply(df[ , 2:4], as.numeric)
     datatable(df, options = list(dom = "t"), rownames = FALSE)
   })
-
+  
   ## ---- Other indices ----
   output$other_indices_table <- renderDT({
     r <- results(); sp <- spec()
     if (is.na(sp$T)) {
       return(datatable(data.frame(Note = "Set a target value (T) in the sidebar to see these measures."),
-                        options = list(dom = "t"), rownames = FALSE))
+                       options = list(dom = "t"), rownames = FALSE))
     }
     sigma <- r$sigma_t; mu <- r$mu; Tg <- sp$T
     mse <- mse_val(sigma, mu, Tg)
@@ -733,14 +739,14 @@ server <- function(input, output, session) {
     )
     datatable(df, options = list(dom = "t"), rownames = FALSE)
   })
-
+  
   output$pcf_text <- renderText({
     r <- results()
     if (is.na(r$cap$Cp)) return("PCF requires both spec limits and a valid short-term sigma.")
     sprintf("PCF = %.1f%% of the specification width is used by the process's natural (short-term) spread.",
             pcf_val(r$cap$Cp))
   })
-
+  
   ## ---- Concepts tab plots ----
   output$concept_plot1 <- renderPlot({
     mu <- input$c_mu; sigma <- input$c_sigma
@@ -764,7 +770,7 @@ server <- function(input, output, session) {
     }
     g
   })
-
+  
   output$concept_plot2 <- renderPlot({
     set.seed(11)
     n_sub <- 5; n_per <- 25; sigma_short <- 0.4
@@ -786,7 +792,7 @@ server <- function(input, output, session) {
       theme_minimal(base_size = 12)
     cowplot_stack(g1, g2)
   })
-
+  
   # simple vertical stacking helper without extra dependency on patchwork/cowplot
   cowplot_stack <- function(p1, p2) {
     gridExtra_available <- requireNamespace("gridExtra", quietly = TRUE)
@@ -796,7 +802,7 @@ server <- function(input, output, session) {
       p2
     }
   }
-
+  
   ## ---- Report ----
   output$report_table <- renderDT({
     r <- results(); sp <- spec()
@@ -814,7 +820,7 @@ server <- function(input, output, session) {
     )
     datatable(df, options = list(dom = "t", pageLength = 20), rownames = FALSE)
   })
-
+  
   output$download_report <- downloadHandler(
     filename = function() paste0("iso22514-4_report_", Sys.Date(), ".csv"),
     content = function(file) {
@@ -828,7 +834,7 @@ server <- function(input, output, session) {
       write.csv(df, file, row.names = FALSE)
     }
   )
-
+  
   output$raw_data_table <- renderDT({
     datatable(data.frame(Value = x_vals()), options = list(pageLength = 10))
   })
